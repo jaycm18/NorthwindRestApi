@@ -8,8 +8,20 @@ namespace NorthwindRestApi.Controllers
     [ApiController]
     public class CustomersController : ControllerBase
     {
-        // Luodaan tietokantayhteys
-        NorthwindContext db = new NorthwindContext();
+    
+
+        // Alustetaan tietokantayhteys
+
+        // Perinteinen tapa
+        // NorthwindContext db = new NorthwindContext();
+
+        // Dependency injektion tapa
+        private NorthwindContext db;
+
+        public CustomersController(NorthwindContext dbparametri)
+        {
+            db = dbparametri;
+        }
 
         // Hakee kaikki asiakkaat
         [HttpGet]
@@ -93,5 +105,43 @@ namespace NorthwindRestApi.Controllers
             }
         }
 
+        // Asiakkaan muokkaaminen
+        [HttpPut("{id}")]
+        public ActionResult EditCustomer(string id, [FromBody] Customer customer)
+        {
+            var asiakas = db.Customers.Find(id);
+            if (asiakas != null)
+            {
+
+                asiakas = customer;
+               // Ei ole pakko luetella kaikkia kenttiä sittenkään
+
+                db.SaveChanges();
+                return Ok("Muokattu asiakasta " + asiakas.CompanyName);
+            }
+
+            return NotFound("Asikasta ei löytynyt id:llä " + id);
+        }
+
+        // Hakee nimen osalla: /api/companyname/hakusana
+        [HttpGet("companyname/{cname}")]
+        public ActionResult GetByName(string cname)
+        {
+            try
+            {
+                var cust = db.Customers.Where(c => c.CompanyName.Contains(cname));
+
+                //var cust = from c in db.Customers where c.CompanyName.Contains(cname) select c; <-- sama mutta traditional
+
+
+                // var cust = db.Customers.Where(c => c.CompanyName == cname); <--- perfect match
+
+                return Ok(cust);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }
