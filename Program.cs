@@ -16,6 +16,15 @@ builder.Services.AddDbContext<NorthwindContext>(options => options.UseSqlServer(
     // builder.Configuration.GetConnectionString("pilvi")
     ));
 
+// Cors määritys
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("all",
+    builder => builder.AllowAnyOrigin()
+    .AllowAnyMethod()
+    .AllowAnyHeader());
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -26,6 +35,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("all");
 
 app.UseAuthorization();
 
