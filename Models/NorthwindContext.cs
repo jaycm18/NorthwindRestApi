@@ -23,6 +23,7 @@ namespace NorthwindRestApi.Models
         public virtual DbSet<Customer> Customers { get; set; } = null!;
         public virtual DbSet<CustomerAndSuppliersByCity> CustomerAndSuppliersByCities { get; set; } = null!;
         public virtual DbSet<CustomerDemographic> CustomerDemographics { get; set; } = null!;
+        public virtual DbSet<Documentation> Documentations { get; set; } = null!;
         public virtual DbSet<Employee> Employees { get; set; } = null!;
         public virtual DbSet<Invoice> Invoices { get; set; } = null!;
         public virtual DbSet<Order> Orders { get; set; } = null!;
@@ -45,12 +46,14 @@ namespace NorthwindRestApi.Models
         public virtual DbSet<Territory> Territories { get; set; } = null!;
         public virtual DbSet<Tilaussummat> Tilaussummats { get; set; } = null!;
         public virtual DbSet<Tuotesummat> Tuotesummats { get; set; } = null!;
+        public virtual DbSet<User> Users { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-                return;
+
+                optionsBuilder.UseSqlServer("Server=secret;");
             }
         }
 
@@ -197,6 +200,28 @@ namespace NorthwindRestApi.Models
                     .IsFixedLength();
 
                 entity.Property(e => e.CustomerDesc).HasColumnType("ntext");
+            });
+
+            modelBuilder.Entity<Documentation>(entity =>
+            {
+                entity.ToTable("Documentation");
+
+                entity.Property(e => e.DocumentationId)
+                    .ValueGeneratedNever()
+                    .HasColumnName("DocumentationID")
+                    .HasComment("Primary Key");
+
+                entity.Property(e => e.AvailableRoute)
+                    .HasMaxLength(200)
+                    .HasComment("URI");
+
+                entity.Property(e => e.Description)
+                    .HasMaxLength(2000)
+                    .HasComment("Selitys");
+
+                entity.Property(e => e.Method)
+                    .HasMaxLength(20)
+                    .HasComment("REST-metodi");
             });
 
             modelBuilder.Entity<Employee>(entity =>
@@ -747,6 +772,19 @@ namespace NorthwindRestApi.Models
                 entity.ToView("Tuotesummat");
 
                 entity.Property(e => e.ProductId).HasColumnName("ProductID");
+            });
+
+            modelBuilder.Entity<User>(entity =>
+            {
+                entity.Property(e => e.Email).HasMaxLength(30);
+
+                entity.Property(e => e.Firstname).HasMaxLength(30);
+
+                entity.Property(e => e.Lastname).HasMaxLength(30);
+
+                entity.Property(e => e.Password).HasMaxLength(200);
+
+                entity.Property(e => e.Username).HasMaxLength(10);
             });
 
             OnModelCreatingPartial(modelBuilder);
