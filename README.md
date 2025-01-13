@@ -10,8 +10,14 @@ Middleware for handling CORS.
 
 Swagger/OpenAPI support for API documentation.
 
+Cypress Tests
+
+This project includes Cypress tests to ensure the functionality of the authentication process and the navigation to the customers page. 
+
 Requirements
 
 .NET 6.0 SDK
 
 SQL Server
+
+
